@@ -15,6 +15,7 @@ Books medical appointments in Portugal by assigning a qualified doctor and an av
 - [API documentation and Swagger](#api-documentation-and-swagger)
 - [Dependency check](#dependency-check)
 - [Testing](#testing)
+- [Manual walkthrough](#manual-walkthrough)
 - [Further documentation](#further-documentation)
 
 ## Overall solution and assumptions
@@ -178,6 +179,69 @@ The supporting runners require Python 3 and Docker Compose and use disposable de
 The retained load run completed 300 mixed requests in 180 seconds, equivalent to **6,000 requests/hour**, with zero unexpected errors or dropped iterations. Half the requests were new bookings. The recovery run also completed all jobs after injected failures. Reports describe workload, measurements and limitations; each dataset belongs to the source/image identifiers in its raw artifacts. Re-run the checks to measure the current checkout. A short local run is not a maximum-capacity or production-uptime guarantee.
 
 [GitHub Actions](.github/workflows/verify.yml) runs Maven verification, the Compose smoke test and the dependency scan. These checks also run locally without GitHub. Source analysis consists of compilation, formatting and architecture checks.
+
+### Manual walkthrough
+
+Start the demo using [Run](#run), wait for readiness, and open [Swagger](http://localhost:8080/swagger-ui.html). Sign in and use **Authorize** for protected requests with `demo-admin` / `demo-admin-only`.
+
+Use synthetic patient details and an unused future date within Lisbon working hours. The examples use `2030-01-15`; adjust all related timestamps if choosing another date or repeating the walkthrough. Generate each new `Idempotency-Key` with `uuidgen` in a terminal, or another UUID generator.
+
+**Create an appointment**
+
+Call `POST /api/v1/appointments` with a new key:
+
+```json
+{
+  "patientName": "Manual Test",
+  "patientEmail": "manual-test@example.invalid",
+  "specialtyCode": "CARDIOLOGY",
+  "startsAt": "2030-01-15T10:00:00Z"
+}
+```
+
+Expect **201 Created**, `status: CONFIRMED`, an assigned doctor and room, a `Location` header and an end time of `10:30Z`. Keep the appointment ID, key and original payload. Initial `integrationStatus` may be `PENDING` or already `COMPLETED`.
+
+**Check the main flows**
+
+Restore the original body before each POST below. Generate a new key except where the original key is explicitly required.
+
+| Check | Action | Expected result |
+|---|---|---|
+| Background processing | Call `GET /api/v1/appointments/{id}` with the returned ID; poll after a few seconds if needed | **200**, eventually `integrationStatus: COMPLETED` |
+| Confirmation | Open [Mailpit](http://localhost:8025) and find the message for `manual-test@example.invalid` | One confirmation with the correct patient, doctor, room, booking reference and Lisbon start/end times |
+| Idempotent replay | Repeat the original POST with the original key and unchanged payload | **201**, same appointment ID, no additional confirmation |
+| Key misuse | Change the email while retaining the original key | **409** `IDEMPOTENCY_MISMATCH` |
+| Patient overlap | Use a new key, the original patient and `startsAt: 2030-01-15T10:15:00Z` | **409** `PATIENT_ALREADY_BOOKED` |
+| Adjacent appointment | Use a new key, the original patient and `startsAt: 2030-01-15T10:30:00Z` | **201**; adjacent appointments do not overlap |
+
+**Follow a pagination cursor**
+
+Call `GET /api/v1/appointments` with `limit=1`, `from=2030-01-15T00:00:00Z`, `to=2030-01-16T00:00:00Z`, and no cursor. Expect **200**, one appointment in `items` and a non-empty `nextCursor`.
+
+Copy `nextCursor` into the next request's `cursor` parameter, keeping the same limit and filters. Expect a different appointment ID. Continue until `nextCursor` is `null`; if those are the only two appointments that day, the second page ends pagination.
+
+**Check rejected requests**
+
+Starting from the original body, change one field per request and use a new key:
+
+| Change | Expected result |
+|---|---|
+| `specialtyCode: UNKNOWN` | **400** `UNKNOWN_SPECIALTY` |
+| `patientEmail: invalid-email` | **400** validation error |
+| `startsAt: 2020-01-15T10:00:00Z` | **400** `START_IN_PAST` |
+| `startsAt: 2030-01-15T22:00:00Z` | **400** `OUTSIDE_WORKING_HOURS` |
+
+These rejected requests should create neither appointments nor confirmation emails. To check access independently of Swagger's saved credentials, run:
+
+```sh
+curl -i http://localhost:8080/api/v1/appointments
+curl -i -u demo-admin:wrong-password http://localhost:8080/api/v1/appointments
+curl -i http://localhost:8080/actuator/health/readiness
+```
+
+Expect **401** for both listing requests and **200** with `status: UP` for readiness.
+
+Continue with the [manual recovery walkthrough](docs/operations.md#manual-recovery-walkthrough) to exercise provider outages, alerts, diagnosis and targeted replay.
 
 ## Further documentation
 

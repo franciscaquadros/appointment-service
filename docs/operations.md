@@ -116,6 +116,77 @@ The [replay script](../scripts/replay-integration-job.sql) resets one failed job
 
 The demo assumes a trusted Docker operator. HTTP ADMIN access or receiving an alert does not grant database access; provision that separately for operators. A full replay audit history is outside scope.
 
+### Manual recovery walkthrough
+
+Start with the [README manual walkthrough](../README.md#manual-walkthrough). Use the demo's default settings and run terminal commands from the project root. In IntelliJ, use the Terminal tool window in that directory; a Markdown code block's Run action may use the documentation directory instead. Use new request keys and unused future slots for these bookings, adjusting the example date throughout if needed.
+
+**Temporary failure and automatic recovery**
+
+1. Make the calendar stub return a retryable error:
+
+   ```sh
+   curl http://localhost:8091/__admin/config \
+     -H 'Content-Type: application/json' \
+     -d '{"status":503,"retryAfter":30}'
+   ```
+
+2. In Swagger, POST a booking with a new `Idempotency-Key`:
+
+   ```json
+   {
+     "patientName": "Recovery Test",
+     "patientEmail": "manual-recovery@example.invalid",
+     "specialtyCode": "CARDIOLOGY",
+     "startsAt": "2030-01-15T11:00:00Z"
+   }
+   ```
+
+   Expect **201** and `status: CONFIRMED`. Keep the appointment ID. Retrieving it while the provider is unavailable should show `integrationStatus: PENDING`, with no patient confirmation yet.
+
+3. Immediately after observing `PENDING`, restore the provider, before the bounded retry budget is exhausted:
+
+   ```sh
+   curl http://localhost:8091/__admin/config \
+     -H 'Content-Type: application/json' -d '{"status":0}'
+   ```
+
+4. Poll the same appointment after the scheduled retry, normally around 30 seconds for a short outage. Expect `COMPLETED` and one patient confirmation in Mailpit. Recovery should require no replay. If the outage was left active until retries were exhausted, use the diagnosis/replay procedure below.
+
+**Permanent failure and operator replay**
+
+1. Simulate a terminal provider error:
+
+   ```sh
+   curl http://localhost:8091/__admin/config \
+     -H 'Content-Type: application/json' -d '{"status":401}'
+   ```
+
+2. Repeat the booking POST with a new key, changing the patient to `Operator Test`, the email to `manual-operator@example.invalid`, and the start to `2030-01-15T12:00:00Z`. Keep this appointment ID. Expect **201**, followed by `status: CONFIRMED` and `integrationStatus: ATTENTION_REQUIRED` when retrieving it after processing.
+
+3. Restore the calendar provider with the `{"status":0}` command above. The terminal job remains failed until replayed. Allow monitoring to catch up, then inspect `IntegrationFailed` in [Prometheus](http://localhost:9090/alerts) and [Alertmanager](http://localhost:9093). Check Mailpit for the aggregated notification to `operator@example.invalid`; the patient confirmation should still be absent. Notification timing follows the grouping policy described above.
+
+4. Diagnose the booking's jobs. Replace `REPLACE_WITH_APPOINTMENT_UUID` with the complete appointment UUID, keeping it on one line inside the SQL quotes:
+
+   ```sh
+   docker compose exec -T database psql -U appointments -d appointments -c \
+     "SELECT id,operation,status,attempt_count,last_error_code FROM integration_job WHERE appointment_id='REPLACE_WITH_APPOINTMENT_UUID';"
+   ```
+
+   Expect `CALENDAR: FAILED` with `HTTP_401` and one recorded attempt, `ROOM: SUCCEEDED`, and `EMAIL: BLOCKED`. This also checks that room processing continues independently of the failed calendar job.
+
+5. Copy the failed **calendar job ID**, not the appointment ID, into the replay command:
+
+   ```sh
+   docker compose exec -T database psql -U appointments -d appointments \
+     -v job_id=REPLACE_WITH_FAILED_CALENDAR_JOB_UUID < scripts/replay-integration-job.sql
+   ```
+
+   Expect one returned row marked `READY`. Only that failed job is reset; the successful room job remains unchanged.
+
+6. Retrieve the same appointment and rerun the diagnostic query after a few seconds. Expect `integrationStatus: COMPLETED`, all three jobs `SUCCEEDED`, and one patient confirmation for `manual-operator@example.invalid`. `IntegrationFailed` should resolve once monitoring catches up, provided no other failed jobs remain.
+
+Restore the stub with `{"status":0}` after each scenario, including if a check fails. These controls and sample credentials are for the local demo.
+
 ## Migrations and demo catalog
 
 Flyway applies [versioned migrations](../src/main/resources/db/migration) at startup. Preserve applied files and checksums; add schema migrations above V1005. V1004 changes worker ownership fields, so stop incompatible application instances before applying that upgrade.
