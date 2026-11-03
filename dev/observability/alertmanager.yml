@@ -1,0 +1,15 @@
+global:
+  smtp_smarthost: mail:1025
+  smtp_from: monitoring@example.invalid
+  smtp_require_tls: false
+route:
+  receiver: operator
+  group_by: [alertname]
+  group_wait: 5s
+  group_interval: 1m
+  repeat_interval: 4h
+receivers:
+  - name: operator
+    email_configs:
+      - to: operator@example.invalid
+        send_resolved: true

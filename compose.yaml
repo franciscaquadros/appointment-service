@@ -1,0 +1,72 @@
+services:
+  database:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: appointments
+      POSTGRES_USER: appointments
+      POSTGRES_PASSWORD: demo-database-only
+    ports:
+      - '127.0.0.1:5432:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U appointments']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - appointment-data:/var/lib/postgresql/data
+  calendar:
+    build: dev/stubs
+    environment:
+      OPERATION: CALENDAR
+    ports: ['127.0.0.1:8091:8080']
+    volumes: ['calendar-data:/data']
+  rooms:
+    build: dev/stubs
+    environment:
+      OPERATION: ROOM
+    ports: ['127.0.0.1:8092:8080']
+    volumes: ['room-data:/data']
+  mail:
+    image: axllent/mailpit:v1.24.1
+    ports: ['127.0.0.1:1025:1025', '127.0.0.1:8025:8025']
+  app:
+    stop_grace_period: 45s
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      DATABASE_URL: jdbc:postgresql://database:5432/appointments
+      CALENDAR_URL: http://calendar:8080
+      ROOM_URL: http://rooms:8080
+      SMTP_HOST: mail
+      OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+      BOOKING_REQUESTS_PER_SECOND: ${BOOKING_REQUESTS_PER_SECOND:-10}
+    ports: ['127.0.0.1:8080:8080']
+    depends_on:
+      database:
+        condition: service_healthy
+      calendar:
+        condition: service_started
+      rooms:
+        condition: service_started
+      mail:
+        condition: service_started
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    ports: ['127.0.0.1:9090:9090']
+    volumes:
+      - ./dev/observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./dev/observability/alerts.yml:/etc/prometheus/alerts.yml:ro
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    ports: ['127.0.0.1:9093:9093']
+    volumes:
+      - ./dev/observability/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+  jaeger:
+    image: jaegertracing/jaeger:2.4.0
+    ports: ['127.0.0.1:16686:16686','127.0.0.1:4318:4318']
+
+volumes:
+  appointment-data:
+  calendar-data:
+  room-data:

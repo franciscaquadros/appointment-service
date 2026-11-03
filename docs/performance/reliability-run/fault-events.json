@@ -1,0 +1,177 @@
+[
+  {
+    "event": "calendar_503_started",
+    "elapsed_seconds": 49.27,
+    "operations": {
+      "CALENDAR": {
+        "succeeded": 26,
+        "pending": 0,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 26,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "EMAIL": {
+        "succeeded": 25,
+        "pending": 1,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 25,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "ROOM": {
+        "succeeded": 26,
+        "pending": 0,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 26,
+        "last_errors": 0,
+        "error_codes": null
+      }
+    }
+  },
+  {
+    "event": "calendar_timeout_started",
+    "elapsed_seconds": 72.12,
+    "operations": {
+      "CALENDAR": {
+        "succeeded": 26,
+        "pending": 19,
+        "failed": 0,
+        "retried": 14,
+        "attempts": 63,
+        "last_errors": 18,
+        "error_codes": [
+          "HTTP_503"
+        ]
+      },
+      "EMAIL": {
+        "succeeded": 26,
+        "pending": 19,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 26,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "ROOM": {
+        "succeeded": 44,
+        "pending": 1,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 44,
+        "last_errors": 0,
+        "error_codes": null
+      }
+    }
+  },
+  {
+    "event": "calendar_recovered",
+    "elapsed_seconds": 87.901,
+    "operations": {
+      "CALENDAR": {
+        "succeeded": 26,
+        "pending": 31,
+        "failed": 0,
+        "retried": 15,
+        "attempts": 66,
+        "last_errors": 20,
+        "error_codes": [
+          "HTTP_503",
+          "HTTP_UNAVAILABLE"
+        ]
+      },
+      "EMAIL": {
+        "succeeded": 26,
+        "pending": 31,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 26,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "ROOM": {
+        "succeeded": 56,
+        "pending": 1,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 56,
+        "last_errors": 0,
+        "error_codes": null
+      }
+    }
+  },
+  {
+    "event": "smtp_paused",
+    "elapsed_seconds": 90.809,
+    "operations": {
+      "CALENDAR": {
+        "succeeded": 26,
+        "pending": 35,
+        "failed": 0,
+        "retried": 15,
+        "attempts": 66,
+        "last_errors": 20,
+        "error_codes": [
+          "HTTP_503",
+          "HTTP_UNAVAILABLE"
+        ]
+      },
+      "EMAIL": {
+        "succeeded": 26,
+        "pending": 35,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 26,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "ROOM": {
+        "succeeded": 59,
+        "pending": 2,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 59,
+        "last_errors": 0,
+        "error_codes": null
+      }
+    }
+  },
+  {
+    "event": "smtp_resumed",
+    "elapsed_seconds": 112.52,
+    "operations": {
+      "CALENDAR": {
+        "succeeded": 76,
+        "pending": 1,
+        "failed": 0,
+        "retried": 20,
+        "attempts": 117,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "EMAIL": {
+        "succeeded": 43,
+        "pending": 34,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 46,
+        "last_errors": 3,
+        "error_codes": [
+          "SMTP_DELIVERY_FAILED"
+        ]
+      },
+      "ROOM": {
+        "succeeded": 76,
+        "pending": 1,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 76,
+        "last_errors": 0,
+        "error_codes": null
+      }
+    }
+  }
+]

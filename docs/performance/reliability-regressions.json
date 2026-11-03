@@ -1,0 +1,183 @@
+{
+  "command": "./mvnw -q verify",
+  "date": "2026-11-03",
+  "exit_code": 0,
+  "tests": 82,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "classes": [
+    {
+      "class": "pt.healthcare.appointments.AppointmentServiceApplicationTests",
+      "tests": 27,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "followUpRegistrationRequiresTheBookingTransaction",
+        "createsBookingAndThreeJobsAtomically",
+        "replayAfterStartStillWorksAndDoesNotRecalculateDuration",
+        "concurrentBookingsNeverOverbookAvailablePairs()[1]",
+        "concurrentBookingsNeverOverbookAvailablePairs()[2]",
+        "concurrentBookingsNeverOverbookAvailablePairs()[3]",
+        "concurrentBookingsNeverOverbookAvailablePairs()[4]",
+        "concurrentBookingsNeverOverbookAvailablePairs()[5]",
+        "failedFollowUpRegistrationRollsBackAppointmentPatientJobsAndRequest",
+        "replaysSameBookingWithCurrentIntegrationStatus",
+        "concurrentDistinctKeysForSamePatientCannotOverlap",
+        "multiSpecialtyDoctorCannotOverlapAcrossSpecialties",
+        "openApiContractDocumentsActualEndpointsSecurityAndErrors",
+        "concurrentIdenticalKeysCreateOnlyOneBooking",
+        "reusesPatientWithoutOverwritingNameAndAllowsAdjacentBooking",
+        "translatesActualDatabaseOverlapConstraints(String)[1]",
+        "translatesActualDatabaseOverlapConstraints(String)[2]",
+        "translatesActualDatabaseOverlapConstraints(String)[3]",
+        "listingRequiresAuthentication",
+        "rejectsPatientOverlapAndRollsBackIdempotencyClaim",
+        "availabilityUsesHalfOpenIntervals(int)[1]",
+        "availabilityUsesHalfOpenIntervals(int)[2]",
+        "availabilityUsesHalfOpenIntervals(int)[3]",
+        "availabilityUsesHalfOpenIntervals(int)[4]",
+        "retriesExclusionTimeoutInFreshTransaction",
+        "publicBookingMapsRequestsAndPatientConflictsToHttp",
+        "progressLookupDerivesDifferentStatesForTheSamePage"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.ArchitectureTest",
+      "tests": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "bookingDoesNotDependOnIntegration",
+        "controllersUseApplicationServices",
+        "servicesDoNotUseDatabaseOrHttpApis",
+        "servicesDoNotDependOnJdbcImplementations",
+        "servicesDoNotAcceptWebRequests",
+        "policyDoesNotDependOnTransportOrStorage",
+        "applicationDoesNotDependOnAdapters",
+        "domainIsIndependent"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.booking.BookingPolicyTest",
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "rejectsIntervalEndingAfterClosing",
+        "validatesLisbonTimeRatherThanClientOffset",
+        "rejectsPastStartAndInvalidConfiguration",
+        "allowsOpeningAndClosingBoundariesInWinterAndSummer"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.booking.BookingServiceTest",
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "rejectsInvalidPaginationBeforeQueryingStorage",
+        "repeatedTimeoutsStopAtTheRetryLimit",
+        "emptyPageDoesNotQueryProgress",
+        "listingCombinesAppointmentDetailsWithOneBatchProgressLookup",
+        "missingAppointmentIsAnApplicationFailure",
+        "readTimeoutAfterCommitDoesNotRetryBooking",
+        "missingFollowUpWorkIsPendingRatherThanCompleted"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.booking.api.ApiErrorContractTest",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "applicationErrorsRetainCodesAndRetryHeader",
+        "malformedJsonDoesNotExposeInput",
+        "unavailableStorageReturnsRetryableProblemWithoutLeakingDetails(RuntimeException)[1]",
+        "unavailableStorageReturnsRetryableProblemWithoutLeakingDetails(RuntimeException)[2]",
+        "unavailableStorageReturnsRetryableProblemWithoutLeakingDetails(RuntimeException)[3]",
+        "validationIncludesFieldDetailsWithoutRejectedValues",
+        "nonExemptWritesRequireCsrfToken",
+        "publicBookingRejectsBrowserSimpleContentTypes",
+        "unexpectedErrorsDoNotExposeExceptionMessage",
+        "missingHeaderHasStableCode",
+        "invalidHeaderHasStableCodeAndDoesNotEchoItsValue",
+        "anonymousAccessPreservesBasicChallenge",
+        "methodNotAllowedPreservesAllowHeader",
+        "invalidPaginationParameterUsesMvcContract",
+        "incorrectCredentialsUseSameContract",
+        "storageProgrammingFailureIsNotReportedAsTemporary",
+        "insufficientRoleReturnsForbiddenProblem"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.booking.persistence.ConstraintRenameMigrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "upgradesExistingDemoDatabaseWithoutChangingAppliedMigrations"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.booking.persistence.IntegrationMigrationTest",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "simplifiesExistingJobsWithoutLosingBookingsOrCompletedWork"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.integration.ExternalIntegrationGatewayTest",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "smtpFailureHasSafeRetryableClassification",
+        "retryableResponsesPreserveBoundedRetryAfterAndPermanentErrorsDoNotRetry",
+        "sendsStableOperationKeyAndOnlyReservationData",
+        "buildsEmailWithDoctorRoomLisbonTimeAndStableMessageId",
+        "connectionFailureIsRetryable"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.integration.IntegrationSchedulerTest",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "drainsFullBatchesForEachOperationUntilPartialBatch",
+        "databaseFailureEndsDrainAndNextPollRetries",
+        "disabledSchedulerDoesNotProcessJobs"
+      ]
+    },
+    {
+      "class": "pt.healthcare.appointments.integration.IntegrationWorkerTest",
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "permanentFailureKeepsAppointmentConfirmedAndEmailBlocked",
+        "rollbackAfterRemoteSuccessReleasesLockAndUsesSameOperationKeyOnRetry",
+        "concurrentWorkersDoNotExecuteTheSameJob",
+        "slowEmailDoesNotBlockCalendarOrRoom",
+        "transientFailureIsScheduledThenRecoveredWithoutRepeatingSuccessfulWork",
+        "executesResourcesBeforeEmailAndUsesTransactionLocks",
+        "retriesStopAfterConfiguredMaximum",
+        "emailIsNotSentAfterAppointmentStart",
+        "continuesBookingTraceAcrossPersistedJobs"
+      ]
+    }
+  ]
+}

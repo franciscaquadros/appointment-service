@@ -1,0 +1,16 @@
+%%{init: {"theme": "neutral", "flowchart": {"subGraphTitleMargin": {"top": 8, "bottom": 25}}}}%%
+flowchart TB
+    patient["Patient clients"] -->|"POST booking"| api
+    admin["Admin clients"] -->|"GET appointments"| api
+
+    subgraph app["Spring Boot application"]
+        api["HTTP API"] -->|"Synchronous request"| booking["Booking feature"]
+        worker["Integration worker<br/>Calendar, room and email lanes"]
+    end
+
+    booking -->|"One transaction:<br/>appointment and jobs"| db[("PostgreSQL")]
+    db -.->|"Asynchronous job polling"| worker
+    worker -->|"Commit job outcome"| db
+    worker --> calendar["Doctor calendar provider"]
+    worker --> room["Room reservation provider"]
+    worker --> smtp["SMTP provider"]

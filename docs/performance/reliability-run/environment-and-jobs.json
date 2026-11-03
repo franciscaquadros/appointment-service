@@ -1,0 +1,188 @@
+{
+  "started_utc": "2026-11-03T00:30:16.063711+00:00",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "docker_resources": {
+    "NCPU": 8,
+    "MemTotal": 8321994752,
+    "ServerVersion": "29.5.2",
+    "Architecture": "aarch64",
+    "OperatingSystem": "Docker Desktop"
+  },
+  "rate_per_minute": 100,
+  "measured_seconds": 180,
+  "planned_measured_requests": 300.0,
+  "k6_image": "grafana/k6:1.6.0",
+  "integration_delay_method": "Final successful attempt transaction-start updated_at minus appointment transaction-start created_at; approximate, excludes final provider call and commit.",
+  "warmup_seconds": 30,
+  "measured_start_seconds": 40,
+  "history_appointments": 40000,
+  "resource_limits": {
+    "app": "2 CPUs / 1 GiB",
+    "database": "2 CPUs / 1 GiB",
+    "k6": "1 CPU / 512 MiB",
+    "each_stub": "0.5 CPU / 256 MiB"
+  },
+  "external_services": "Local calendar/room contract stubs, zero configured delay; Mailpit SMTP. Worker enabled. Tracing sampling disabled; no Prometheus scraping. Provider failures are injected; see fault-events.json.",
+  "application_source_sha256": "a1a99852be5870f418bab0e71e98d16f64c037b782e96384ad8f90ab6e7635b3",
+  "images": [
+    {
+      "id": "sha256:007b020ca3ea4624ce428960881c7d2095c7349862234a36d76ea540b28a3353",
+      "tags": [
+        "healthcare-load-3da48fa8fe-calendar:latest"
+      ],
+      "digests": [
+        "healthcare-load-3da48fa8fe-calendar@sha256:007b020ca3ea4624ce428960881c7d2095c7349862234a36d76ea540b28a3353"
+      ]
+    },
+    {
+      "id": "sha256:010b623ff9a79abc6dbc52dbd737412051d8e22bc28ac1e208feef9d7ef86a92",
+      "tags": [
+        "healthcare-load-3da48fa8fe-app:latest"
+      ],
+      "digests": [
+        "healthcare-load-3da48fa8fe-app@sha256:010b623ff9a79abc6dbc52dbd737412051d8e22bc28ac1e208feef9d7ef86a92"
+      ]
+    },
+    {
+      "id": "sha256:120df301cd0f0be6dbb097b8b7236219f1011446cfc3946debc57a2fffcb3b12",
+      "tags": [
+        "healthcare-load-3da48fa8fe-rooms:latest"
+      ],
+      "digests": [
+        "healthcare-load-3da48fa8fe-rooms@sha256:120df301cd0f0be6dbb097b8b7236219f1011446cfc3946debc57a2fffcb3b12"
+      ]
+    },
+    {
+      "id": "sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e",
+      "tags": [
+        "axllent/mailpit:v1.24.1"
+      ],
+      "digests": [
+        "axllent/mailpit@sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e"
+      ]
+    },
+    {
+      "id": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "tags": [
+        "postgres:17.6-alpine"
+      ],
+      "digests": [
+        "postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+      ]
+    },
+    {
+      "id": "sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532",
+      "tags": [
+        "grafana/k6:1.6.0"
+      ],
+      "digests": [
+        "grafana/k6@sha256:be2a9ceb1b6ffc573277af4157135882a6d6433968b41e858ab02c5fd5847532"
+      ]
+    }
+  ],
+  "k6_exit_code": 0,
+  "load_wall_seconds": 222.3,
+  "drain_wait_seconds": 0.124,
+  "final_jobs": {
+    "pending": 0,
+    "ready": 0,
+    "blocked": 0,
+    "failed": 0,
+    "succeeded": 501,
+    "oldest_pending_seconds": 0
+  },
+  "measured_integrations": {
+    "appointments": 151,
+    "completed": 151,
+    "completion_p95_seconds": 52.7439755,
+    "completion_p99_seconds": 59.293406,
+    "completion_max_seconds": 60.114818
+  },
+  "operations_after_load": {
+    "CALENDAR": {
+      "succeeded": 167,
+      "pending": 0,
+      "failed": 0,
+      "retried": 20,
+      "attempts": 208,
+      "last_errors": 0,
+      "error_codes": null
+    },
+    "EMAIL": {
+      "succeeded": 167,
+      "pending": 0,
+      "failed": 0,
+      "retried": 3,
+      "attempts": 170,
+      "last_errors": 0,
+      "error_codes": null
+    },
+    "ROOM": {
+      "succeeded": 167,
+      "pending": 0,
+      "failed": 0,
+      "retried": 0,
+      "attempts": 167,
+      "last_errors": 0,
+      "error_codes": null
+    }
+  },
+  "recovery_probes": {
+    "app_crash_after_remote_commit": {
+      "passed": true,
+      "appointment_id": "ba8f2099-1d82-4d07-9282-482d7804433e",
+      "jobs_after_kill": [
+        {
+          "operation": "EMAIL",
+          "status": "BLOCKED",
+          "attempts": 0
+        },
+        {
+          "operation": "ROOM",
+          "status": "SUCCEEDED",
+          "attempts": 1
+        },
+        {
+          "operation": "CALENDAR",
+          "status": "READY",
+          "attempts": 0
+        }
+      ],
+      "same_id_on_replay": true,
+      "remote_calendar_reservations": 1
+    },
+    "database_outage": {
+      "passed": true,
+      "readiness_during_outage": 503,
+      "liveness_during_outage": 200,
+      "booking_during_outage": 503,
+      "readiness_after_recovery": 200,
+      "replayed_booking_status": 201,
+      "same_id_on_replay": true,
+      "earlier_booking_preserved": true
+    }
+  },
+  "final_jobs_after_probes": {
+    "pending": 0,
+    "ready": 0,
+    "blocked": 0,
+    "failed": 0,
+    "succeeded": 507,
+    "oldest_pending_seconds": 0
+  },
+  "invariants": {
+    "appointments": 169,
+    "jobs": 507,
+    "maximum_recorded_attempts": 4,
+    "orphan_jobs": 0,
+    "missing_prerequisites": 0,
+    "overlap_pairs": 0
+  },
+  "remote_reservations": {
+    "calendar": 169,
+    "rooms": 169
+  },
+  "smtp_messages": 169,
+  "ended_utc": "2026-11-03T00:34:28.255730+00:00",
+  "passed": true
+}

@@ -1,0 +1,1 @@
+CREATE INDEX integration_job_attempt_lookup ON integration_job_attempt(job_id,created_at);

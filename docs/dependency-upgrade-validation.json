@@ -1,0 +1,193 @@
+{
+  "verified_at": "2026-11-03T12:26:03.970313+00:00",
+  "pom_sha256": "8cf17bfe4ffda40386b5696719669b2ac9ea986ce7eca173b8cf43841d161fd1",
+  "dependency_scan": {
+    "command": "sh scripts/check-dependencies.sh",
+    "exit_code": 0,
+    "scanner": "OSV-Scanner 2.7.0",
+    "inventory_generator": "CycloneDX Maven plugin 2.9.1",
+    "components_scanned": 186,
+    "vulnerability_matches": 0,
+    "bom_sha256": "996f0095e4e51e644f05a4362a247ff605ec082ecc325b7c6e18f5a7e94d5c6a",
+    "results_sha256": "83b65904983be9f2acbcbd4f30b65b57499221aabe6ffd858174e414b50b819d",
+    "opentelemetry_components": [
+      {
+        "name": "opentelemetry-api",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-context",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-common",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-sdk",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-sdk-common",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-sdk-trace",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-extension-trace-propagators",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-exporter-otlp",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-sdk-metrics",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-sdk-logs",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-exporter-otlp-common",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-exporter-common",
+        "version": "1.67.0"
+      },
+      {
+        "name": "opentelemetry-exporter-sender-okhttp",
+        "version": "1.67.0"
+      }
+    ]
+  },
+  "maven_verify": {
+    "command": "./mvnw -q verify",
+    "exit_code": 0,
+    "formatting_check": "passed",
+    "tests": 117,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "compose_smoke": {
+    "started_utc": "2026-11-03T12:25:56.134623+00:00",
+    "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "docker_resources": {
+      "NCPU": 8,
+      "MemTotal": 8321994752,
+      "ServerVersion": "29.5.2",
+      "Architecture": "aarch64",
+      "OperatingSystem": "Docker Desktop"
+    },
+    "history_appointments": 0,
+    "resource_limits": {
+      "app": "2 CPUs / 1 GiB",
+      "database": "2 CPUs / 1 GiB",
+      "k6": "1 CPU / 512 MiB",
+      "each_stub": "0.5 CPU / 256 MiB"
+    },
+    "external_services": "Local calendar/room contract stubs, zero configured delay; Mailpit SMTP. Worker enabled. Tracing sampling disabled; no Prometheus scraping.",
+    "application_source_sha256": "6d39c9231c62a63ddc58889855e325670c52dbadd4ee778836bbdb53a3972b56",
+    "images": [
+      {
+        "id": "sha256:10ac5758a4b1fd7bbdfa05f6fc95480d42c4dd884dcc09bdb805e7268b2aa6f9",
+        "tags": [
+          "healthcare-load-e795444608-app:latest"
+        ],
+        "digests": [
+          "healthcare-load-e795444608-app@sha256:10ac5758a4b1fd7bbdfa05f6fc95480d42c4dd884dcc09bdb805e7268b2aa6f9"
+        ]
+      },
+      {
+        "id": "sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e",
+        "tags": [
+          "axllent/mailpit:v1.24.1"
+        ],
+        "digests": [
+          "axllent/mailpit@sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e"
+        ]
+      },
+      {
+        "id": "sha256:504ae75a6e34b8575d24ede541d6c824782d220f69a5015ea311b51bd2f40995",
+        "tags": [
+          "healthcare-load-e795444608-rooms:latest"
+        ],
+        "digests": [
+          "healthcare-load-e795444608-rooms@sha256:504ae75a6e34b8575d24ede541d6c824782d220f69a5015ea311b51bd2f40995"
+        ]
+      },
+      {
+        "id": "sha256:783dd8b848c162a4246aac9518535a0270109d6d94364de8b5fd6fa1efd41c7c",
+        "tags": [
+          "healthcare-load-e795444608-calendar:latest"
+        ],
+        "digests": [
+          "healthcare-load-e795444608-calendar@sha256:783dd8b848c162a4246aac9518535a0270109d6d94364de8b5fd6fa1efd41c7c"
+        ]
+      },
+      {
+        "id": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+        "tags": [
+          "postgres:17.6-alpine"
+        ],
+        "digests": [
+          "postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+        ]
+      }
+    ],
+    "mode": "smoke-only",
+    "smoke_probe": {
+      "passed": true,
+      "elapsed_seconds": 6.913,
+      "appointments": 2,
+      "jobs": 6,
+      "operations": {
+        "CALENDAR": {
+          "succeeded": 2,
+          "pending": 0,
+          "failed": 0,
+          "retried": 0,
+          "attempts": 2,
+          "last_errors": 0,
+          "error_codes": null
+        },
+        "EMAIL": {
+          "succeeded": 2,
+          "pending": 0,
+          "failed": 0,
+          "retried": 0,
+          "attempts": 2,
+          "last_errors": 0,
+          "error_codes": null
+        },
+        "ROOM": {
+          "succeeded": 2,
+          "pending": 0,
+          "failed": 0,
+          "retried": 0,
+          "attempts": 2,
+          "last_errors": 0,
+          "error_codes": null
+        }
+      },
+      "calendar_reservations": 2,
+      "room_reservations": 2,
+      "confirmation_emails": 2,
+      "checks": [
+        "booking and idempotent replay",
+        "HTTP cursor continuation",
+        "provider payloads and stable operation keys",
+        "all jobs succeeded",
+        "email recipients, subject, names, reference and Lisbon start/end times",
+        "HTTP completed integration status"
+      ]
+    },
+    "ended_utc": "2026-11-03T12:26:03.970313+00:00",
+    "passed": true
+  }
+}

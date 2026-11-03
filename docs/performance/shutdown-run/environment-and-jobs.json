@@ -1,0 +1,197 @@
+{
+  "started_utc": "2026-11-03T10:27:27.941308+00:00",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "docker_resources": {
+    "NCPU": 8,
+    "MemTotal": 8321994752,
+    "ServerVersion": "29.5.2",
+    "Architecture": "aarch64",
+    "OperatingSystem": "Docker Desktop"
+  },
+  "history_appointments": 0,
+  "resource_limits": {
+    "app": "2 CPUs / 1 GiB",
+    "database": "2 CPUs / 1 GiB",
+    "k6": "1 CPU / 512 MiB",
+    "each_stub": "0.5 CPU / 256 MiB"
+  },
+  "external_services": "Calendar response delayed four seconds; healthy room stub and Mailpit. Real adapters and worker enabled.",
+  "application_source_sha256": "db342c689810d8c562865e75c72bfd383613a75790ab4a7b091355cb8509f03a",
+  "images": [
+    {
+      "id": "sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e",
+      "tags": [
+        "axllent/mailpit:v1.24.1"
+      ],
+      "digests": [
+        "axllent/mailpit@sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e"
+      ]
+    },
+    {
+      "id": "sha256:6e3c207d4595454430c06596fd62f5eb7f8bea45f2832840af81f6c8191d8428",
+      "tags": [
+        "healthcare-load-201de00ceb-rooms:latest"
+      ],
+      "digests": [
+        "healthcare-load-201de00ceb-rooms@sha256:6e3c207d4595454430c06596fd62f5eb7f8bea45f2832840af81f6c8191d8428"
+      ]
+    },
+    {
+      "id": "sha256:b4c2006e804953d8a7b7435a04adceaf7cf304cf8e1374ab4dcccf83da87df87",
+      "tags": [
+        "healthcare-load-201de00ceb-calendar:latest"
+      ],
+      "digests": [
+        "healthcare-load-201de00ceb-calendar@sha256:b4c2006e804953d8a7b7435a04adceaf7cf304cf8e1374ab4dcccf83da87df87"
+      ]
+    },
+    {
+      "id": "sha256:c14f998f7ff011315c2e01d0e910ad59c8a99e80fc44932081ff29b33615b335",
+      "tags": [
+        "healthcare-load-201de00ceb-app:latest"
+      ],
+      "digests": [
+        "healthcare-load-201de00ceb-app@sha256:c14f998f7ff011315c2e01d0e910ad59c8a99e80fc44932081ff29b33615b335"
+      ]
+    },
+    {
+      "id": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "tags": [
+        "postgres:17.6-alpine"
+      ],
+      "digests": [
+        "postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+      ]
+    }
+  ],
+  "mode": "graceful-shutdown-only",
+  "shutdown_probe": {
+    "passed": true,
+    "signal": "SIGTERM via docker compose stop",
+    "provider_delay_seconds": 4,
+    "scheduler_wait_seconds": 30,
+    "container_grace_seconds": 45,
+    "stop_elapsed_seconds": 2.76,
+    "exit_code": 143,
+    "oom_killed": false,
+    "first_appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+    "second_appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+    "jobs_before_signal": [
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "CALENDAR",
+        "status": "READY",
+        "attempts": 0
+      },
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "EMAIL",
+        "status": "BLOCKED",
+        "attempts": 0
+      },
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "ROOM",
+        "status": "READY",
+        "attempts": 0
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "CALENDAR",
+        "status": "READY",
+        "attempts": 0
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "EMAIL",
+        "status": "BLOCKED",
+        "attempts": 0
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "ROOM",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      }
+    ],
+    "jobs_after_stop": [
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "CALENDAR",
+        "status": "READY",
+        "attempts": 0
+      },
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "EMAIL",
+        "status": "BLOCKED",
+        "attempts": 0
+      },
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "ROOM",
+        "status": "READY",
+        "attempts": 0
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "CALENDAR",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "EMAIL",
+        "status": "BLOCKED",
+        "attempts": 0
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "ROOM",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      }
+    ],
+    "jobs_after_restart": [
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "CALENDAR",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      },
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "EMAIL",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      },
+      {
+        "appointment": "cb90b0af-7015-4d2d-94ad-4574a8649e7c",
+        "operation": "ROOM",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "CALENDAR",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "EMAIL",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      },
+      {
+        "appointment": "f89080bc-aaae-434a-aecc-8ee4d80ce0db",
+        "operation": "ROOM",
+        "status": "SUCCEEDED",
+        "attempts": 1
+      }
+    ],
+    "remote_reservations_after_restart": 2
+  },
+  "ended_utc": "2026-11-03T10:27:48.795367+00:00",
+  "passed": true
+}

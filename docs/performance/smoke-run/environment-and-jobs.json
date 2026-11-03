@@ -1,0 +1,116 @@
+{
+  "started_utc": "2026-11-03T12:07:40.655787+00:00",
+  "host": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "docker_resources": {
+    "NCPU": 8,
+    "MemTotal": 8321994752,
+    "ServerVersion": "29.5.2",
+    "Architecture": "aarch64",
+    "OperatingSystem": "Docker Desktop"
+  },
+  "history_appointments": 0,
+  "resource_limits": {
+    "app": "2 CPUs / 1 GiB",
+    "database": "2 CPUs / 1 GiB",
+    "k6": "1 CPU / 512 MiB",
+    "each_stub": "0.5 CPU / 256 MiB"
+  },
+  "external_services": "Local calendar/room contract stubs, zero configured delay; Mailpit SMTP. Worker enabled. Tracing sampling disabled; no Prometheus scraping.",
+  "application_source_sha256": "eb200018df46096a7e30be45164f5801ab038f91c94d816fef4de5a638f57d5f",
+  "images": [
+    {
+      "id": "sha256:3b2cde8da40f3038175cc8343ff3e172de4a30cce883cd71a890b641701b5342",
+      "tags": [
+        "healthcare-load-2a599997cb-calendar:latest"
+      ],
+      "digests": [
+        "healthcare-load-2a599997cb-calendar@sha256:3b2cde8da40f3038175cc8343ff3e172de4a30cce883cd71a890b641701b5342"
+      ]
+    },
+    {
+      "id": "sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e",
+      "tags": [
+        "axllent/mailpit:v1.24.1"
+      ],
+      "digests": [
+        "axllent/mailpit@sha256:4873e5a441ed368f1e98a832f61257a033859f5e829542cd03fb772d2282ea4e"
+      ]
+    },
+    {
+      "id": "sha256:53ea92b777483deced853c1718bd91ce7956b91c119f37f0aef20ef1b17629f9",
+      "tags": [
+        "healthcare-load-2a599997cb-app:latest"
+      ],
+      "digests": [
+        "healthcare-load-2a599997cb-app@sha256:53ea92b777483deced853c1718bd91ce7956b91c119f37f0aef20ef1b17629f9"
+      ]
+    },
+    {
+      "id": "sha256:be06290fcac9ce1b9e8cdae4e5d516329572341c79dbf622d9f28eb192b2f3ec",
+      "tags": [
+        "healthcare-load-2a599997cb-rooms:latest"
+      ],
+      "digests": [
+        "healthcare-load-2a599997cb-rooms@sha256:be06290fcac9ce1b9e8cdae4e5d516329572341c79dbf622d9f28eb192b2f3ec"
+      ]
+    },
+    {
+      "id": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "tags": [
+        "postgres:17.6-alpine"
+      ],
+      "digests": [
+        "postgres@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94"
+      ]
+    }
+  ],
+  "mode": "smoke-only",
+  "smoke_probe": {
+    "passed": true,
+    "elapsed_seconds": 6.923,
+    "appointments": 2,
+    "jobs": 6,
+    "operations": {
+      "CALENDAR": {
+        "succeeded": 2,
+        "pending": 0,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 2,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "EMAIL": {
+        "succeeded": 2,
+        "pending": 0,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 2,
+        "last_errors": 0,
+        "error_codes": null
+      },
+      "ROOM": {
+        "succeeded": 2,
+        "pending": 0,
+        "failed": 0,
+        "retried": 0,
+        "attempts": 2,
+        "last_errors": 0,
+        "error_codes": null
+      }
+    },
+    "calendar_reservations": 2,
+    "room_reservations": 2,
+    "confirmation_emails": 2,
+    "checks": [
+      "booking and idempotent replay",
+      "HTTP cursor continuation",
+      "provider payloads and stable operation keys",
+      "all jobs succeeded",
+      "email recipients, subject, names, reference and Lisbon start/end times",
+      "HTTP completed integration status"
+    ]
+  },
+  "ended_utc": "2026-11-03T12:07:48.529751+00:00",
+  "passed": true
+}

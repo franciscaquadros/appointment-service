@@ -1,0 +1,60 @@
+services:
+  database:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: appointments
+      POSTGRES_USER: appointments
+      POSTGRES_PASSWORD: load-fixture-only
+    cpus: 2
+    mem_limit: 1g
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U appointments']
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  calendar:
+    build: ../../dev/stubs
+    environment: {OPERATION: CALENDAR}
+    cpus: 0.5
+    mem_limit: 256m
+  rooms:
+    build: ../../dev/stubs
+    environment: {OPERATION: ROOM}
+    cpus: 0.5
+    mem_limit: 256m
+  mail:
+    image: axllent/mailpit:v1.24.1
+    cpus: 0.5
+    mem_limit: 256m
+  app:
+    stop_grace_period: 45s
+    build: ../..
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      DATABASE_URL: jdbc:postgresql://database:5432/appointments
+      SPRING_DATASOURCE_PASSWORD: load-fixture-only
+      CALENDAR_URL: http://calendar:8080
+      ROOM_URL: http://rooms:8080
+      SMTP_HOST: mail
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: '0'
+      JAVA_TOOL_OPTIONS: '-XX:MaxRAMPercentage=70'
+      BOOKING_REQUESTS_PER_SECOND: ${BOOKING_REQUESTS_PER_SECOND:-10}
+    cpus: 2
+    mem_limit: 1g
+    depends_on:
+      database: {condition: service_healthy}
+      calendar: {condition: service_started}
+      rooms: {condition: service_started}
+      mail: {condition: service_started}
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://localhost:8080/actuator/health/readiness']
+      interval: 2s
+      timeout: 3s
+      retries: 90
+  k6:
+    image: grafana/k6:1.6.0
+    profiles: [load]
+    cpus: 1
+    mem_limit: 512m
+    volumes:
+      - ./baseline.js:/scripts/baseline.js:ro

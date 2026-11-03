@@ -1,0 +1,15 @@
+{
+  "observed_on": "2026-11-03",
+  "probe": "Booking request while the disposable PostgreSQL container was stopped",
+  "expected_status": 503,
+  "actual_status": 500,
+  "actual_body": {
+    "detail": "An unexpected error occurred",
+    "instance": "/api/v1/appointments",
+    "status": 500,
+    "title": "Internal Server Error",
+    "type": "about:blank",
+    "code": "INTERNAL_ERROR"
+  },
+  "fix": "Handle CannotCreateTransactionException as DATABASE_UNAVAILABLE with HTTP 503 and Retry-After, without exposing exception details."
+}
