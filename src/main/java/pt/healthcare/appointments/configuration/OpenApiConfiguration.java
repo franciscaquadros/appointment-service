@@ -132,7 +132,7 @@ public class OpenApiConfiguration {
                 .title("Medical appointment API")
                 .version("v1")
                 .description(
-                    "Local booking is confirmed before external processing. Integration progress is reported separately. Public patient email identity is assumed, not verified."))
+                    "Local booking is confirmed before external processing. Public booking returns a minimal receipt; patient and resource details require ADMIN access. Public patient email identity is assumed, not verified."))
         .components(components);
   }
 

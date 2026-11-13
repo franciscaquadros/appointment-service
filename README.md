@@ -61,7 +61,7 @@ curl -u demo-admin:demo-admin-only \
   'http://localhost:8080/api/v1/appointments?limit=20'
 ```
 
-The response is `201 Created` with a `CONFIRMED` appointment, integration progress and a `Location` header. Keep the request key and payload for retries.
+The response is `201 Created` with a minimal booking receipt and a `Location` header pointing to the ADMIN-protected detail endpoint. The receipt contains only `id`, `startsAt`, `endsAt`, `status` and `integrationStatus`; it excludes patient identity, specialty, doctor and room details for every caller. Keep the request key and payload for retries. Administrators can retrieve full appointment details using the protected GET endpoints.
 
 ## Database model and booking consistency
 
@@ -75,7 +75,7 @@ See the [database model and diagrams](docs/data-model.md), [booking consistency 
 
 Every booking POST requires a client-generated UUID in `Idempotency-Key`.
 
-- Repeating the key with the same canonical payload returns the original appointment with current integration progress and HTTP `201`, including after its start time.
+- Repeating the key with the same canonical payload returns the original minimal receipt with current integration progress and HTTP `201`, including after its start time. Replays also exclude patient and resource details.
 - Reusing the key with a different payload returns `409 IDEMPOTENCY_MISMATCH`.
 - Concurrent requests with the same key create one appointment and one set of jobs. A failed transaction rolls back its key claim as well as its booking data.
 
@@ -164,7 +164,7 @@ See [dependency-check scope and reports](docs/dependency-check.md). This is sepa
 ./mvnw verify
 ```
 
-Requires Java 25 and Docker. The verified suite contains **127 tests**, with zero failures, errors or skips. It covers policy boundaries, allocation, inactive resources, concurrency, rollback, idempotency, pagination, HTTP/security contracts, logging privacy, migrations, provider behavior, worker recovery and shutdown. PostgreSQL tests use isolated containers; ArchUnit checks feature/layer boundaries; Spotless checks formatting.
+Requires Java 25 and Docker. The verified suite contains **129 tests**, with zero failures, errors or skips. It covers policy boundaries, allocation, inactive resources, concurrency, rollback, idempotency, pagination, HTTP/security contracts, public booking/replay privacy, logging privacy, migrations, provider behavior, worker recovery and shutdown. PostgreSQL tests use isolated containers; ArchUnit checks feature/layer boundaries; Spotless checks formatting.
 
 The supporting runners require Python 3 and Docker Compose and use disposable deployments. They build the current checkout, publish no host ports and clean up their own resources. Use separate output directories to preserve recorded evidence.
 
@@ -199,7 +199,7 @@ Call `POST /api/v1/appointments` with a new key:
 }
 ```
 
-Expect **201 Created**, `status: CONFIRMED`, an assigned doctor and room, a `Location` header and an end time of `10:30Z`. Keep the appointment ID, key and original payload. Initial `integrationStatus` may be `PENDING` or already `COMPLETED`.
+Expect **201 Created**, a minimal receipt with `status: CONFIRMED`, a `Location` header and an end time of `10:30Z`. Patient and resource details are excluded from the POST response; retrieve the assigned doctor and room through the ADMIN-protected detail endpoint. Keep the appointment ID, key and original payload. Initial `integrationStatus` may be `PENDING` or already `COMPLETED`.
 
 **Check the main flows**
 

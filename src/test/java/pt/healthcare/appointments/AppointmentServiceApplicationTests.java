@@ -236,6 +236,19 @@ class AppointmentServiceApplicationTests {
           .endsWith("/AppointmentPage");
       assertThat(document.<List<String>>read("$.components.schemas.AppointmentPage.required"))
           .containsExactlyInAnyOrder("items", "nextCursor");
+      assertThat(
+              document.<String>read(
+                  "$.paths['/api/v1/appointments'].post.responses['201'].content['application/json'].schema['$ref']"))
+          .endsWith("/BookingReceipt");
+      assertThat(
+              document.<Map<String, Object>>read("$.components.schemas.BookingReceipt.properties"))
+          .containsOnlyKeys("id", "startsAt", "endsAt", "status", "integrationStatus");
+      assertThat(document.<List<String>>read("$.components.schemas.BookingReceipt.required"))
+          .containsExactlyInAnyOrder("id", "startsAt", "endsAt", "status", "integrationStatus");
+      assertThat(
+              document.<String>read(
+                  "$.paths['/api/v1/appointments/{id}'].get.responses['200'].content['application/json'].schema['$ref']"))
+          .endsWith("/AppointmentView");
       assertThat(document.<List<String>>read("$.components.schemas.BookingRequest.required"))
           .containsExactlyInAnyOrder("patientName", "patientEmail", "specialtyCode", "startsAt");
       assertThat(
@@ -654,6 +667,108 @@ class AppointmentServiceApplicationTests {
       assertThat(problem.<Integer>read("$.status")).isEqualTo(400);
       assertNoBookingRows();
     }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = {"patient.case@example.invalid", "PATIENT.CASE@example.invalid"})
+  void publicBookingAndReplayDoNotDisclosePersistedPatientDetails(String email) throws Exception {
+    var original = request("Patient.Case@example.invalid", 10, 0);
+    bookings.book(
+        UUID.randomUUID(),
+        new BookAppointmentCommand(
+            "Stored Private Name",
+            original.patientEmail(),
+            original.specialtyCode(),
+            original.startsAt()));
+    var second = request(email, 11, 0);
+    UUID key = UUID.randomUUID();
+    String body =
+        """
+        {"patientName":"Unverified Requester","patientEmail":"%s",
+         "specialtyCode":"CARDIOLOGY","startsAt":"%s"}
+        """
+            .formatted(email, second.startsAt());
+    String root = "http://localhost:" + port;
+    var bookingRequest =
+        java.net.http.HttpRequest.newBuilder(URI.create(root + "/api/v1/appointments"))
+            .header("Content-Type", "application/json")
+            .header("Idempotency-Key", key.toString())
+            .POST(java.net.http.HttpRequest.BodyPublishers.ofString(body))
+            .build();
+    try (var client = java.net.http.HttpClient.newHttpClient()) {
+      var created = client.send(bookingRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+      assertThat(created.statusCode()).isEqualTo(201);
+      var receipt = com.jayway.jsonpath.JsonPath.parse(created.body());
+      assertThat(receipt.<Map<String, Object>>read("$"))
+          .containsOnlyKeys("id", "startsAt", "endsAt", "status", "integrationStatus");
+      assertThat(created.body())
+          .doesNotContain(
+              "Stored Private Name", "Patient.Case@example.invalid", "Unverified Requester", email);
+      UUID appointmentId = UUID.fromString(receipt.read("$.id"));
+      assertThat(receipt.<String>read("$.status")).isEqualTo("CONFIRMED");
+      assertThat(receipt.<String>read("$.integrationStatus")).isEqualTo("PENDING");
+      assertThat(OffsetDateTime.parse(receipt.read("$.startsAt")).toInstant())
+          .isEqualTo(second.startsAt().toInstant());
+      assertThat(OffsetDateTime.parse(receipt.read("$.endsAt")).toInstant())
+          .isEqualTo(second.startsAt().toInstant().plusSeconds(1800));
+      String location = created.headers().firstValue("Location").orElseThrow();
+      assertThat(location).isEqualTo("/api/v1/appointments/" + appointmentId);
+
+      var anonymousDetail =
+          client.send(
+              java.net.http.HttpRequest.newBuilder(URI.create(root + location)).build(),
+              java.net.http.HttpResponse.BodyHandlers.ofString());
+      assertThat(anonymousDetail.statusCode()).isEqualTo(401);
+
+      jdbc.sql("UPDATE integration_job SET status='SUCCEEDED' WHERE appointment_id=:id")
+          .param("id", appointmentId)
+          .update();
+      var replay = client.send(bookingRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+      assertThat(replay.statusCode()).isEqualTo(201);
+      var replayReceipt = com.jayway.jsonpath.JsonPath.parse(replay.body());
+      assertThat(replayReceipt.<Map<String, Object>>read("$"))
+          .containsOnlyKeys("id", "startsAt", "endsAt", "status", "integrationStatus");
+      assertThat(replayReceipt.<String>read("$.id")).isEqualTo(appointmentId.toString());
+      assertThat(replayReceipt.<String>read("$.integrationStatus")).isEqualTo("COMPLETED");
+      assertThat(replay.body())
+          .doesNotContain(
+              "Stored Private Name", "Patient.Case@example.invalid", "Unverified Requester", email);
+      assertThat(replay.headers().firstValue("Location")).contains(location);
+
+      String authorization =
+          "Basic "
+              + Base64.getEncoder()
+                  .encodeToString(
+                      "demo-admin:demo-admin-only"
+                          .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      var administratorDetail =
+          client.send(
+              java.net.http.HttpRequest.newBuilder(URI.create(root + location))
+                  .header("Authorization", authorization)
+                  .build(),
+              java.net.http.HttpResponse.BodyHandlers.ofString());
+      assertThat(administratorDetail.statusCode()).isEqualTo(200);
+      var details = com.jayway.jsonpath.JsonPath.parse(administratorDetail.body());
+      assertThat(details.<String>read("$.patientName")).isEqualTo("Stored Private Name");
+      assertThat(details.<String>read("$.patientEmail")).isEqualTo("Patient.Case@example.invalid");
+      assertThat(details.<String>read("$.doctor")).isNotBlank();
+      assertThat(details.<String>read("$.room")).isNotBlank();
+      var administratorList =
+          client.send(
+              java.net.http.HttpRequest.newBuilder(URI.create(root + "/api/v1/appointments"))
+                  .header("Authorization", authorization)
+                  .build(),
+              java.net.http.HttpResponse.BodyHandlers.ofString());
+      assertThat(administratorList.statusCode()).isEqualTo(200);
+      var page = com.jayway.jsonpath.JsonPath.parse(administratorList.body());
+      assertThat(page.<List<String>>read("$.items[*].patientName"))
+          .containsExactly("Stored Private Name", "Stored Private Name");
+    }
+    assertThat(jdbc.sql("SELECT count(*) FROM patient").query(Integer.class).single()).isEqualTo(1);
+    assertThat(jdbc.sql("SELECT count(*) FROM appointment").query(Integer.class).single())
+        .isEqualTo(2);
+    assertThat(jdbc.sql("SELECT count(*) FROM integration_job").query(Integer.class).single())
+        .isEqualTo(6);
   }
 
   @Test

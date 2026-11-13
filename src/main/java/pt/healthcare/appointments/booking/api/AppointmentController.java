@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import pt.healthcare.appointments.booking.application.BookingService;
 import pt.healthcare.appointments.booking.dto.AppointmentPage;
 import pt.healthcare.appointments.booking.dto.AppointmentView;
+import pt.healthcare.appointments.booking.dto.BookingReceipt;
 import pt.healthcare.appointments.booking.dto.BookingRequest;
 
 @Tag(name = "Appointments")
@@ -43,12 +44,15 @@ public class AppointmentController {
       Public endpoint. Atomically allocates a qualified doctor and room, confirms the local booking,
       and registers calendar, room, and email work. External processing is asynchronous; failure
       does not cancel the appointment. Repeating the same idempotency key and canonical payload
-      returns the original appointment with current progress and HTTP 201, even after its start.
+      returns the original receipt with current progress and HTTP 201, even after its start.
+      Receipts contain only the booking ID, times, status and integration progress. Patient and
+      resource details are available only through the ADMIN-protected detail/list endpoints.
       A different payload with that key returns 409. Duration defaults to 30 minutes.
       """)
   @ApiResponse(
       responseCode = "201",
-      description = "Confirmed appointment, including idempotent replay.",
+      description =
+          "Minimal booking receipt, including idempotent replay; no patient or resource details.",
       headers =
           @Header(
               name = "Location",
@@ -57,12 +61,12 @@ public class AppointmentController {
       content =
           @Content(
               mediaType = "application/json",
-              schema = @Schema(implementation = AppointmentView.class)))
+              schema = @Schema(implementation = BookingReceipt.class)))
   @ApiResponse(responseCode = "409", ref = "#/components/responses/Conflict")
   @ApiResponse(responseCode = "429", ref = "#/components/responses/RateLimited")
   @ApiResponse(responseCode = "415", ref = "#/components/responses/UnsupportedMediaType")
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<AppointmentView> create(
+  public ResponseEntity<BookingReceipt> create(
       @Parameter(
               description =
                   "Client-generated UUID. Retain it and the same payload for retries; treat it as a secret recovery token.",
@@ -72,7 +76,7 @@ public class AppointmentController {
       @Valid @RequestBody BookingRequest request) {
     AppointmentView appointment = bookings.book(requestKey, request.toCommand());
     return ResponseEntity.created(URI.create("/api/v1/appointments/" + appointment.id()))
-        .body(appointment);
+        .body(BookingReceipt.from(appointment));
   }
 
   @Operation(
