@@ -19,6 +19,7 @@ Requires Python 3 and Docker Compose. The runner builds the current source and s
 The probe creates two simultaneous Cardiology bookings for different synthetic patients, replays the first request key, follows a one-item listing cursor and allows up to 30 seconds for the jobs to succeed. It verifies:
 
 - Exactly two appointments and six jobs, including after replay.
+- Public booking and replay return only ID, times, status and progress; patient/resource details are retrieved with ADMIN authentication.
 - Both booking IDs appear once across the two HTTP pages.
 - Two reservations in each provider, with stable operation keys and matching appointment IDs, allocated external resource IDs and start/end instants.
 - Two emails, one per patient, with the Portuguese subject, patient/doctor/room names, booking reference and Lisbon start/end times.

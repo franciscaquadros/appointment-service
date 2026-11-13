@@ -16,6 +16,7 @@ def smoke_probe(command, prefix, sql):
     auth = {'Authorization': 'Basic ' + base64.b64encode(b'demo-admin:demo-admin-only').decode()}
     start = (datetime.now(timezone.utc) + timedelta(days=2)).replace(hour=10, minute=0, second=0, microsecond=0)
     bookings = []
+    receipt_fields = {'id', 'startsAt', 'endsAt', 'status', 'integrationStatus'}
     for label in ['first', 'second']:
         body = {'patientName': f'Smoke {label}', 'patientEmail': f'smoke-{label}@example.invalid',
                 'specialtyCode': 'CARDIOLOGY', 'startsAt': start.isoformat()}
@@ -23,12 +24,17 @@ def smoke_probe(command, prefix, sql):
         created = request(command, prefix, endpoint, 'POST', body, headers)
         assert created['status'] == 201, created
         assert created['body']['status'] == 'CONFIRMED', created
-        bookings.append((created['body'], body, headers))
+        assert set(created['body']) == receipt_fields, created
+        # Patient/resource details are available only to an administrator.
+        details = request(command, prefix, endpoint + '/' + created['body']['id'], headers=auth)
+        assert details['status'] == 200, details
+        bookings.append((details['body'], body, headers))
 
     # The same request key must resolve to the same booking without extra jobs.
     first, body, headers = bookings[0]
     replay = request(command, prefix, endpoint, 'POST', body, headers)
     assert replay['status'] == 201 and replay['body']['id'] == first['id'], replay
+    assert set(replay['body']) == receipt_fields, replay
 
     page = request(command, prefix, endpoint + '?limit=1', headers=auth)
     assert page['status'] == 200 and len(page['body']['items']) == 1, page
@@ -98,7 +104,8 @@ with sqlite3.connect('/data/reservations.sqlite') as db:
     return {'passed': True, 'elapsed_seconds': round(time.monotonic() - started, 3),
             'appointments': 2, 'jobs': 6, 'operations': operations,
             'calendar_reservations': 2, 'room_reservations': 2, 'confirmation_emails': 2,
-            'checks': ['booking and idempotent replay', 'HTTP cursor continuation',
+            'checks': ['minimal public booking/replay receipts and protected administrator details',
+                       'booking and idempotent replay', 'HTTP cursor continuation',
                        'provider payloads and stable operation keys', 'all jobs succeeded',
                        'email recipients, subject, names, reference and Lisbon start/end times',
                        'HTTP completed integration status']}
